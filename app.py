@@ -90,3 +90,12 @@ if user_input := strt.chat_input("Ask about listings, buying, or selling..."):
 
     except Exception as e:
         strt.error(f"System Error: {e}")
+# HIDE STREAMLIT BRANDING AND BUTTONS
+HIDE_STYLE = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+"""
+strt.markdown(HIDE_STYLE, unsafe_allow_html=True)
