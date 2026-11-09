@@ -74,7 +74,7 @@ if user_input := strt.chat_input("Ask about listings, buying, or selling..."):
             temperature=0.7,
             max_tokens=100
         )
-        bot_reply = response.choices.message.content
+        bot_reply = response.choices[0].message.content
 
         with strt.chat_message("assistant"):
             strt.write(bot_reply)
