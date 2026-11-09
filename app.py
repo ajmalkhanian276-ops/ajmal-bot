@@ -13,7 +13,6 @@ client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 # ------------------------------------------------------------------
 # SECURITY SYSTEM: CREATING YOUR SECRET PASSWORD
 # ------------------------------------------------------------------
-# You can change 'AjmalSecure2026' to any password you prefer!
 SECRET_PASSWORD = "AjmalSecure2026"
 
 # Initialize security state memory bank
@@ -91,7 +90,9 @@ if user_input := strt.chat_input("Type your message here..."):
             temperature=0.7,
             max_tokens=100
         )
-        bot_reply = response.choices.message.content
+        
+        # STRUCTURAL FIX ADDED HERE -> [0]
+        bot_reply = response.choices[0].message.content
 
         # Show bot message instantly with an assistant icon
         with strt.chat_message("assistant"):
