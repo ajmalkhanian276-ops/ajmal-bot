@@ -1,4 +1,5 @@
 import os
+import requests
 import streamlit as strt
 from datetime import datetime
 from groq import Groq
@@ -9,6 +10,11 @@ load_dotenv()
 
 # Initialize Groq Client
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
+# ------------------------------------------------------------------
+# YOUR FORMSPREE EMAIL ENDPOINT (PASTE YOUR EXACT LINK BELOW)
+# ------------------------------------------------------------------
+FORMSPREE_URL = "https://formspree.io/f/mdegzvlj"
 
 # ------------------------------------------------------------------
 # SECURITY SYSTEM
@@ -46,7 +52,7 @@ Our Main Services:
 
 Follow these strict rules:
 1. Be exceptionally polite, professional, and helpful.
-2. If the user wants to buy, sell, or view a property, ask for their Full Name, Email, and what type of home they are looking for (Budget/Bedrooms).
+2. If the user wants to buy, sell, or view a property, ask for their Full Name, Email/Phone, and what type of home they are looking for (Budget/Bedrooms).
 3. Once they give you those details, say exactly: "[LEAD_CAPTURED] Thank you! A licensed agent from Apex Realty will reach out to you shortly."
 """
 
@@ -80,37 +86,24 @@ if user_input := strt.chat_input("Ask about listings, buying, or selling..."):
             strt.write(bot_reply)
         strt.session_state.messages.append({"role": "assistant", "content": bot_reply})
 
+        # TRIGGER INSTANT EMAIL ALERT VIA FORMSPREE
         if "[LEAD_CAPTURED]" in bot_reply:
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            with open("leads.txt", "a", encoding="utf-8") as file:
-                file.write(f"--- NEW REAL ESTATE LEAD ({current_time}) ---\n")
-                file.write(f"User: {user_input}\n")
-                file.write(f"Bot: {bot_reply}\n\n")
-            strt.success("📝 Real estate lead logged securely to your dashboard file!")
+            
+            # Send data straight to your email inbox
+            lead_data = {
+                "subject": f"🏡 New Real Estate Lead ({current_time})",
+                "Buyer_Details": user_input,
+                "AI_Confirmation": bot_reply,
+                "Timestamp": current_time
+            }
+            
+            email_response = requests.post(FORMSPREE_URL, data=lead_data)
+            
+            if email_response.status_code == 200:
+                strt.success("✅ Lead captured and sent straight to the agent's email inbox!")
+            else:
+                strt.warning("⚠️ Lead captured, but email alert could not be sent. Check your Formspree link.")
 
     except Exception as e:
         strt.error(f"System Error: {e}")
-# HIDE STREAMLIT BRANDING AND BUTTONS
-HIDE_STYLE = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    </style>
-"""
-strt.markdown(HIDE_STYLE, unsafe_allow_html=True)
-# ------------------------------------------------------------------
-# CLEAN UP UI: HIDE STREAMLIT BRANDING, MENUS, AND FOOTER
-# ------------------------------------------------------------------
-HIDE_STREAMLIT_STYLE = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
-    [data-testid="stToolbar"] {visibility: hidden;}
-    [data-testid="stDecoration"] {display: none;}
-    [data-testid="stStatusWidget"] {visibility: hidden;}
-    .stAppDeployButton {display: none;}
-    </style>
-"""
-strt.markdown(HIDE_STREAMLIT_STYLE, unsafe_allow_html=True)
