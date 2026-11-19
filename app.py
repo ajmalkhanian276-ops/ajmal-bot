@@ -99,3 +99,18 @@ HIDE_STYLE = """
     </style>
 """
 strt.markdown(HIDE_STYLE, unsafe_allow_html=True)
+# ------------------------------------------------------------------
+# CLEAN UP UI: HIDE STREAMLIT BRANDING, MENUS, AND FOOTER
+# ------------------------------------------------------------------
+HIDE_STREAMLIT_STYLE = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    [data-testid="stToolbar"] {visibility: hidden;}
+    [data-testid="stDecoration"] {display: none;}
+    [data-testid="stStatusWidget"] {visibility: hidden;}
+    .stAppDeployButton {display: none;}
+    </style>
+"""
+strt.markdown(HIDE_STREAMLIT_STYLE, unsafe_allow_html=True)
